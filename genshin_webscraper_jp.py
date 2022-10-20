@@ -7,7 +7,8 @@ import datetime
 import pandas as pd
 
 banner = []
-dates = []
+start_date = []
+end_date = []
 revenue = []
 ranking = []
 
@@ -36,8 +37,11 @@ def get_table_data():
 
     for table in valid_tables:
         trs = table.find_all("tr")
-        dates.append(trs[0].find_all(
-            "td", {"class": "style_td"})[-1].get_text())
+        # dates
+        dates = trs[0].find_all("td", {"class": "style_td"})[-1].get_text()
+        index = dates.find("～")
+        start_date.append(dates[:index])
+        end_date.append(dates[index+1:])
         # revenue.append(yen_to_USD(trs[1].find_all(
         #     "td", {"class": "style_td"})[-1].get_text()))
         revenue.append(trs[1].find_all(
@@ -65,6 +69,6 @@ for link in links:
     driver.delete_all_cookies
 
 driver.quit()
-df = pd.DataFrame({'Banner': banner, 'Banner Date': dates,
+df = pd.DataFrame({'Banner': banner, 'Start Date': start_date, 'End Date': end_date,
                    'Revenue': revenue, 'Ranking': ranking})
 df.to_csv("banner_data.csv")
